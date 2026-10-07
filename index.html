@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuickNotes</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <header class="site-header">
+        <h1>QuickNotes</h1>
+        <p>Capture your thoughts, one note at a time.</p>
+    </header>
+
+    <main>
+        <section class="panel" aria-labelledby="add-heading">
+            <h2 id="add-heading">Add a note</h2>
+            <form id="note-form">
+                <div class="form-field">
+                    <label for="note-input">Note</label>
+                    <input id="note-input" name="note" type="text" maxlength="201" placeholder="What do you want to remember?">
+                </div>
+                <div class="form-field">
+                    <label for="note-category">Category</label>
+                    <select id="note-category" name="category">
+                        <option value="personal">Personal</option>
+                        <option value="work">Work</option>
+                        <option value="study">Study</option>
+                    </select>
+                </div>
+                <button type="submit">Add Note</button>
+            </form>
+            <p id="error-message" role="alert" aria-live="polite"></p>
+        </section>
+
+        <section class="panel" aria-labelledby="notes-heading">
+            <h2 id="notes-heading">Your notes</h2>
+            <label class="search-label" for="search-input">Search notes</label>
+            <input id="search-input" type="search" placeholder="Type to search your notes">
+            <p id="note-count" aria-live="polite">You have no notes yet.</p>
+            <ul id="notes-list" aria-live="polite"></ul>
+        </section>
+    </main>
+
+    <footer>
+        <p>QuickNotes &mdash; a little space for your thoughts.</p>
+    </footer>
+</body>
+</html>
