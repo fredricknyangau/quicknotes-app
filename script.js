@@ -2,11 +2,16 @@ const noteForm = document.querySelector("#note-form");
 const noteInput = document.querySelector("#note-input");
 const noteCategory = document.querySelector("#note-category");
 const notesList = document.querySelector("#notes-list");
+const noteCount = document.querySelector("#note-count");
+const errorMessage = document.querySelector("#error-message");
 
 let notes = [];
 
 function render() {
     notesList.replaceChildren();
+    noteCount.textContent = notes.length === 0
+        ? "You have no notes yet."
+        : `You have ${notes.length} ${notes.length === 1 ? "note" : "notes"}.`;
 
     for (const note of notes) {
         const item = document.createElement("li");
@@ -27,7 +32,16 @@ function render() {
         date.dateTime = note.createdAt;
         date.textContent = new Date(note.createdAt).toLocaleString();
 
-        meta.append(category, date);
+        const deleteButton = document.createElement("button");
+        deleteButton.classList.add("delete-button");
+        deleteButton.type = "button";
+        deleteButton.textContent = "Delete";
+        deleteButton.addEventListener("click", () => {
+            notes = notes.filter((currentNote) => currentNote.id !== note.id);
+            render();
+        });
+
+        meta.append(category, date, deleteButton);
         item.append(text, meta);
         notesList.append(item);
     }
@@ -36,9 +50,20 @@ function render() {
 noteForm.addEventListener("submit", (event) => {
     event.preventDefault();
 
+    const text = noteInput.value.trim();
+    if (!text) {
+        errorMessage.textContent = "Please type a note first.";
+        return;
+    }
+    if (noteInput.value.length > 200) {
+        errorMessage.textContent = "Notes must be 200 characters or fewer.";
+        return;
+    }
+
+    errorMessage.textContent = "";
     const note = {
         id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
-        text: noteInput.value.trim(),
+        text,
         category: noteCategory.value,
         createdAt: new Date().toISOString(),
     };
