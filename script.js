@@ -4,8 +4,14 @@ const noteCategory = document.querySelector("#note-category");
 const notesList = document.querySelector("#notes-list");
 const noteCount = document.querySelector("#note-count");
 const errorMessage = document.querySelector("#error-message");
+const searchInput = document.querySelector("#search-input");
 
-let notes = [];
+const savedNotes = localStorage.getItem("quicknotes-notes");
+let notes = savedNotes === null ? [] : JSON.parse(savedNotes);
+
+function saveNotes() {
+    localStorage.setItem("quicknotes-notes", JSON.stringify(notes));
+}
 
 function render() {
     notesList.replaceChildren();
@@ -13,7 +19,21 @@ function render() {
         ? "You have no notes yet."
         : `You have ${notes.length} ${notes.length === 1 ? "note" : "notes"}.`;
 
-    for (const note of notes) {
+    const searchTerms = searchInput.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
+    const visibleNotes = notes.filter((note) => {
+        const noteText = note.text.toLowerCase();
+        return searchTerms.every((term) => noteText.includes(term));
+    });
+
+    if (searchTerms.length > 0 && visibleNotes.length === 0) {
+        const noResults = document.createElement("li");
+        noResults.classList.add("no-results");
+        noResults.textContent = "No notes match your search.";
+        notesList.append(noResults);
+        return;
+    }
+
+    for (const note of visibleNotes) {
         const item = document.createElement("li");
         item.classList.add("note-card", `category-${note.category}`);
 
@@ -38,6 +58,7 @@ function render() {
         deleteButton.textContent = "Delete";
         deleteButton.addEventListener("click", () => {
             notes = notes.filter((currentNote) => currentNote.id !== note.id);
+            saveNotes();
             render();
         });
 
@@ -69,8 +90,11 @@ noteForm.addEventListener("submit", (event) => {
     };
 
     notes.push(note);
+    saveNotes();
     render();
     noteInput.value = "";
 });
+
+searchInput.addEventListener("input", render);
 
 render();
